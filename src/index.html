@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Трекер настроения - отслеживайте свои эмоции каждый день">
+  <title>Трекер настроения</title>
+  <link rel="stylesheet" href="./styles/reset.css">
+  <link rel="stylesheet" href="./styles/main.css">
+  <script type="module" src="./js/main.js"></script>
+</head>
+<body>
+  <!-- Кастомное уведомление -->
+  <div id="toast-notification" class="toast-notification">
+    <div class="toast-notification__icon">🖇</div>
+    <div class="toast-notification__content">
+      <div class="toast-notification__title">Успешно!</div>
+      <div class="toast-notification__message">Настроение сохранено</div>
+    </div>
+  </div>
+
+  <!-- Скрытые radio buttons для переключения вкладок -->
+  <input type="radio" name="tab" id="tab-diary" class="tab-input" checked>
+  <input type="radio" name="tab" id="tab-history" class="tab-input">
+  <input type="radio" name="tab" id="tab-notes" class="tab-input">
+  <input type="radio" name="tab" id="tab-calendar" class="tab-input">
+
+  <div class="app-container">
+    <header class="app-header">
+      <h1 class="app-title">Трекер настроения</h1>
+      <p class="app-subtitle">Отслеживайте свои эмоции каждый день</p>
+      
+      <!-- Кнопка настроек -->
+      <button id="settings-btn" class="settings-button" aria-label="Настройки" title="Настройки">
+        ⚙️
+      </button>
+      
+      <!-- Навигация -->
+      <nav class="app-navigation">
+        <label for="tab-diary" class="nav-button">
+          <span class="nav-icon">📝</span>
+          <span class="nav-label">Трекер</span>
+        </label>
+        <label for="tab-history" class="nav-button">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">История</span>
+        </label>
+        <label for="tab-notes" class="nav-button">
+          <span class="nav-icon">📖</span>
+          <span class="nav-label">Дневник</span>
+        </label>
+        <label for="tab-calendar" class="nav-button">
+          <span class="nav-icon">📅</span>
+          <span class="nav-label">Календарь</span>
+        </label>
+      </nav>
+    </header>
+
+    <main class="main-content">
+      <!-- Экран добавления настроения -->
+      <section class="screen screen--diary">
+        <div class="mood-selector-section">
+          <h2 class="section-title">Как вы себя чувствуете сегодня?</h2>
+        
+          <div class="mood-grid">
+            <button class="mood-card mood-card--excellent mood-button" data-mood="excellent">
+              <span class="mood-card__emoji">😄</span>
+              <span class="mood-card__label">Отлично</span>
+            </button>
+            
+            <button class="mood-card mood-card--good mood-button" data-mood="good">
+              <span class="mood-card__emoji">🙂</span>
+              <span class="mood-card__label">Хорошо</span>
+            </button>
+            
+            <button class="mood-card mood-card--neutral mood-button" data-mood="neutral">
+              <span class="mood-card__emoji">😐</span>
+              <span class="mood-card__label">Нормально</span>
+            </button>
+            
+            <button class="mood-card mood-card--bad mood-button" data-mood="bad">
+              <span class="mood-card__emoji">😞</span>
+              <span class="mood-card__label">Плохо</span>
+            </button>
+            
+            <button class="mood-card mood-card--terrible mood-button" data-mood="terrible">
+              <span class="mood-card__emoji">😡</span>
+              <span class="mood-card__label">Ужасно</span>
+            </button>
+          </div>
+
+          <!-- Поле для заметки (скрыто по умолчанию) -->
+          <div id="mood-note-section" class="form-group hidden">
+            <label for="moodNote" class="form-label">Добавьте комментарий (необязательно)</label>
+            <textarea 
+              id="moodNote" 
+              class="form-textarea mood-note" 
+              placeholder="Что у вас на уме?"
+              rows="4"
+            ></textarea>
+          </div>
+          
+          <button type="button" id="save-mood-btn" class="submit-button hidden">
+            Сохранить настроение
+          </button>
+          
+          <section class="advice">
+            <h3>Advice or thought of the day 🌿</h3>
+            <p id="advice-text">Загружаем совет…</p>
+          </section>
+          
+        </div>
+      </section>
+
+      <!-- Экран истории настроени -->
+      <section class="screen screen--history">
+        <div class="mood-history-section">
+          <h2 class="section-title">История ваших настроений</h2>
+          <div id="history-list"></div>
+        </div>
+      </section>
+
+      <!-- Экран заметок -->
+      <section class="screen screen--notes">
+        <div class="diary-section">
+          <h2 class="section-title">Мои заметки</h2>
+          
+          <!-- Форма добавления заметки -->
+          <form id="note-form" class="diary-form">
+            <div class="form-group">
+              <label for="note-title" class="form-label">Заголовок (необязательно)</label>
+              <input 
+                type="text" 
+                id="note-title" 
+                class="form-input" 
+                placeholder="О чём эта запись?"
+              />
+            </div>
+            
+            <div class="form-group">
+              <label for="note-content" class="form-label">Ваши мысли</label>
+              <textarea 
+                id="note-content" 
+                class="form-textarea" 
+                placeholder="Здесь можете написать о том, что у вас на душе..."
+                rows="6"
+                required
+              ></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Как вы себя чувствуете?</label>
+              <div class="diary-mood-selector">
+                <button type="button" class="diary-mood-btn" data-mood="excellent" title="Отлично">😄</button>
+                <button type="button" class="diary-mood-btn" data-mood="good" title="Хорошо">🙂</button>
+                <button type="button" class="diary-mood-btn" data-mood="neutral" title="Нормально">😐</button>
+                <button type="button" class="diary-mood-btn" data-mood="bad" title="Плохо">😞</button>
+                <button type="button" class="diary-mood-btn" data-mood="terrible" title="Ужасно">😡</button>
+              </div>
+              <input type="hidden" id="note-mood" value="excellent">
+            </div>
+            
+            <button type="submit" class="submit-button">
+              Сохранить
+            </button>
+          </form>
+          
+          <hr class="diary-divider">
+          
+          <h3 class="diary-list-title">Ваши записи</h3>
+          <div id="notes-list"></div>
+        </div>
+      </section>
+
+      <!-- Экран календаря -->
+      <section class="screen screen--calendar">
+        <div class="calendar-section">
+          <h2 class="section-title">Календарь настроений</h2>
+          
+          <div class="calendar-controls">
+            <button id="prev-month" class="calendar-nav-btn" aria-label="Предыдущий месяц">
+              ←
+            </button>
+            <h3 id="calendar-month" class="calendar-month">Декабрь 2025</h3>
+            <button id="next-month" class="calendar-nav-btn" aria-label="Следующий месяц">
+              →
+            </button>
+          </div>
+
+          <div class="calendar-grid-wrapper">
+            <!-- Заголовки дней недели -->
+            <div class="calendar-weekdays">
+              <div class="calendar-weekday">Пн</div>
+              <div class="calendar-weekday">Вт</div>
+              <div class="calendar-weekday">Ср</div>
+              <div class="calendar-weekday">Чт</div>
+              <div class="calendar-weekday">Пт</div>
+              <div class="calendar-weekday">Сб</div>
+              <div class="calendar-weekday">Вс</div>
+            </div>
+
+            <!-- Дни месяца (генерируются JS) -->
+            <div id="calendar-grid" class="calendar-grid"></div>
+          </div>
+
+          <!-- Легенда календаря -->
+          <div class="calendar-legend">
+            <div class="calendar-legend__item">
+              <span class="calendar-legend__emoji">😄</span>
+              <span>Отлично</span>
+            </div>
+            <div class="calendar-legend__item">
+              <span class="calendar-legend__emoji">🙂</span>
+              <span>Хорошо</span>
+            </div>
+            <div class="calendar-legend__item">
+              <span class="calendar-legend__emoji">😐</span>
+              <span>Нормально</span>
+            </div>
+            <div class="calendar-legend__item">
+              <span class="calendar-legend__emoji">😞</span>
+              <span>Плохо</span>
+            </div>
+            <div class="calendar-legend__item">
+              <span class="calendar-legend__emoji">😡</span>
+              <span>Ужасно</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p class="footer-text">
+        &copy; Трекер настроения. Позаботьтесь о своём ментальном здоровье.
+      </p>
+    </footer>
+  </div>
+
+  <!-- Модальное окно настроек -->
+  <div id="settings-modal" class="modal hidden">
+    <div class="modal__overlay"></div>
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2 class="modal__title">⚙️ Настройки</h2>
+        <button id="close-settings" class="modal__close" aria-label="Закрыть">&times;</button>
+      </div>
+      
+      <div class="modal__body">
+        <!-- Уведомления -->
+        <section class="settings-section">
+          <h3 class="settings-section__title">🔔 Уведомления</h3>
+          
+          <div class="settings-item">
+            <label class="settings-toggle">
+              <input type="checkbox" id="notification-toggle">
+              <div class="settings-toggle__content">
+                <span class="settings-toggle__label">Включить уведомления</span>
+                <span class="settings-toggle__hint">Разрешить браузерные уведомления</span>
+              </div>
+            </label>
+          </div>
+          
+          <div class="settings-item">
+            <label for="reminder-interval" class="settings-label">Напоминания</label>
+            <select id="reminder-interval" class="settings-select">
+              <option value="0">Отключено</option>
+              <option value="1">Каждый час</option>
+              <option value="3">Каждые 3 часа</option>
+              <option value="6">Каждые 6 часов</option>
+              <option value="12">Каждые 12 часов</option>
+              <option value="24">Раз в день</option>
+            </select>
+          </div>
+        </section>
+        
+        <!-- Данные -->
+        <section class="settings-section">
+          <h3 class="settings-section__title">💾 Управление данными</h3>
+          
+          <div class="settings-item">
+            <p class="settings-info">
+              Размер данных: <strong id="storage-size">0 KB</strong>
+            </p>
+          </div>
+          
+          <div class="settings-actions">
+            <button id="export-data-btn" class="settings-btn settings-btn--secondary">
+              📥 Экспортировать данные
+            </button>
+            
+            <button id="import-data-btn" class="settings-btn settings-btn--secondary">
+              📤 Импортировать данные
+            </button>
+            <input type="file" id="import-data-input" accept=".json" style="display: none;">
+            
+            <button id="clear-data-btn" class="settings-btn settings-btn--danger">
+              🗑️ Удалить все данные
+            </button>
+          </div>
+        </section>
+        
+        <!-- Информация -->
+        <section class="settings-section">
+          <h3 class="settings-section__title">О приложении</h3>
+          <p class="settings-text">
+            <strong>Трекер настроения</strong> — приложение для отслеживания и фиксации эмоций.<br></p>
+            <p>Используемые API:</p>
+          <ul class="settings-list">
+            <li>Web Storage API — хранение настроений, заметок и настроек пользователя;</li>
+            <li>Notification API — системные уведомления и напоминания о записи настроения;</li>
+            <li>Advice Slip API — советы или мысль дня (GET);</li>
+            <li>JSONPlaceholder — отправка пользовательских данных на сервер (POST).</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
